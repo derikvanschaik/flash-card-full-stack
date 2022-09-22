@@ -1,0 +1,11 @@
+form(hx-put="/contact/1" hx-target="this" hx-swap="outerHTML")
+  div(class="form-group")
+    label Question
+    input(type="text" name="firstName" value=`${currentCard.question}`)
+
+  div(class="form-group")
+    labelLast Answer
+    input(type="text" name="lastName" value=`${currentCard.answer}`)
+
+  button(class="btn btn-secondary") Submit
+  button(class="btn btn-secondary" hx-get="/contact/1") Cancel

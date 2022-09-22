@@ -34,21 +34,32 @@ block content
           style=`width: ${Math.floor( ((index + 1)/flashCardDeck.flashCards.length) * 100)}%;` 
           aria-valuenow=`${index}` 
           aria-valuemin="0" 
-          aria-valuemax=`${flashCardDeck.flashCards.length}`) #{index + 1}/#{flashCardDeck.flashCards.length}
+          aria-valuemax=`${flashCardDeck.flashCards.length}`) #{index + 1}/#{flashCardDeck.flashCards.length})
 
     div(class='card my-2')
-      div(class='card-body')
-         div(class='card-title')
-           h4 #{currentCard.question}
-         div(class='card-text')
-           p #{currentCard.answer} 
+      div(class='card-header d-flex flex-row')
+        button(
+              class='btn btn-light-outline' 
+              hx-get=`/flashcard/edit/${flashCardDeck._id}/?index=${index}` 
+              hx-trigger="click" 
+              hx-target='.card'
+              hx-swap='innerHTML')
+
+          i(class="fa fa-pencil fa-fw fa-2x" aria-hidden="true")
+        a(class='btn btn-light-outline' hx-delete=`/flashcard/${flashCardDeck._id}/${index}` hx-confirm="Are you sure you want to delete? This action cannot be undone.")
+          i(class="fa fa-trash fa-fw fa-2x" aria-hidden="true")
+        
+      div(class='card-body text-center')
+        div(class='card-title')
+          h4 #{currentCard.question}
+        div(class='card-text')
+          a(href="#" onclick="this.style.display='none';this.nextSibling.style.display = 'block'") See Answer
+          p(style='display: none') #{currentCard.answer} 
 
     div(class='btn group')
         a( 
             class=`btn btn-secondary ${index - 1 < 0? 'disabled' : ''}` 
             href=`/deck/${flashCardDeck._id}?index=${index - 1}`) Prev
-
-        button(class='btn btn-secondary') Flip
 
         a(
             class = `btn btn-secondary ${index + 1 >= flashCardDeck.flashCards.length ? 'disabled' : ''}` 

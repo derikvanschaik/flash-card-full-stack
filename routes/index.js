@@ -72,34 +72,76 @@ router.get('/deck/:_id', function(req, res){
   })
 })
 
-// router.post('/completeTask', function(req, res, next) {
-//   console.log("I am in the PUT method")
-//   const taskId = req.body._id;
-//   const completedDate = Date.now();
+router.get('/flashcard/edit/:_id', function(req, res) {
+  const id = req.params._id;
+  const index = parseInt(req.query.index);
+  FlashCardDeck.findById(id)
+  .then((flashCardDeck) =>{
+    const currentCard = flashCardDeck.flashCards.find( card => card.index === index);
+    res.send(
+      `
+      <form class='form p-4' action='/edit/flashcard/${id}/${index}' method='POST'>
+        <div class='from-group'>
+          <label class='h4'>Question</label>
+          <input class='form-control' type="text" name="cardQuestion" value='${currentCard.question}'>
+        </div>
+        <div class="form-group">
+          <label class='h4'>Answer</label>
+          <input class='form-control' type="text" name="cardAnswer" value='${currentCard.answer}'>
+        </div>
+        <button class="btn">Submit</button>
+        <a class='btn' href="/deck/${flashCardDeck._id}/?index=${index}" >Cancel</button>
+    </form> 
+      `
+    )
+  })
+  .catch((error) =>{
+    console.log("there was an error...");
+    res.status(500).send();
+  })
 
-//   Task.findByIdAndUpdate(taskId, { completed: true, completedDate })
-//     .then(() => { 
-//       console.log(`Completed task ${taskId}`)
-//       res.redirect('/'); }  )
-//     .catch((err) => {
-//       console.log(err);
-//       res.send('Sorry! Something went wrong.');
-//     });
-// });
+})
 
+router.post('/edit/flashcard/:_id/:index', function(req, res) {
+  const {cardQuestion, cardAnswer} = req.body;
+  const id = req.params._id;
+  const index = parseInt(req.params.index);
+  const updatedCard = {question: cardQuestion, answer: cardAnswer, index }
+  FlashCardDeck.findById(id)
+      .then((deck) => {
+        deck.flashCards = [...deck.flashCards.slice(0, index), updatedCard,...deck.flashCards.slice(index + 1, deck.flashCards.length)];
+        deck.save()
+        .then( () => {
+          res.redirect(`/deck/${req.params._id}/?index=${index}`);
+        } )
+        .catch( (err) => console.log(err))
+      })
+      .catch((err) => {
+          console.log(err);
+          res.send('Sorry! Something went wrong.');
+      });
+});
 
-// router.post('/deleteTask', function(req, res, next) {
-//   const taskId = req.body._id;
-//   const completedDate = Date.now();
-//   Task.findByIdAndDelete(taskId)
-//     .then(() => { 
-//       console.log(`Deleted task $(taskId)`)      
-//       res.redirect('/'); }  )
-//     .catch((err) => {
-//       console.log(err);
-//       res.send('Sorry! Something went wrong.');
-//     });
-// });
+router.delete('/flashcard/:_id/:index', function(req, res) {
+  const id = req.params._id;
+  const index = parseInt(req.params.index);
+  FlashCardDeck.findById(id)
+      .then((deck) => {
+        deck.flashCards = deck.flashCards.filter((item, idx) => idx !== index);
+        deck.flashCards.forEach( (item, i) => item.index = i);
+        deck.save()
+        .then( () => {
+          // redirects
+          res.set("HX-Redirect", `/deck/${id}/?index=${index}`).send();
+        } )
+        .catch( (err) => console.log(err))
+      })
+      .catch((err) => {
+          console.log(err);
+          res.send('Sorry! Something went wrong.');
+      });
+});
+
 
 
 module.exports = router;
