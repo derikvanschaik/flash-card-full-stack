@@ -1,0 +1,57 @@
+extends layout
+
+block content
+
+  h1(class='my-2') #{flashCardDeck.name}
+  
+  form(action=`/addFlashCard/${flashCardDeck._id}` method='POST' class='form-registration')
+    fieldset(class='border p-2')
+      legend Add New FlashCard
+        div(class='row my-3')
+            div(class='col-md-2 align-bottom')
+              label(for="cardQuestion" class='fs-5') Question:
+            div(class='col-md-8')
+              input(class="form-control form-control-sm" type="text" name='cardQuestion', placeholder="Enter flashcard question" required)
+            div(class='col-md-2 text-end')
+
+        div(class='row my-3')
+            div(class='col-md-2 align-bottom')
+              label(for="cardAnswer" class='fs-5') Answer:
+            div(class='col-md-8')
+              input(class="form-control form-control-sm" type="text" name='cardAnswer', placeholder="Enter flashcard answer" required)
+            div(class='col-md-2 text-end')
+
+        div(class='row my-3')
+          div(class='col-md-2 align-bottom')
+          div(class='col-md-8')
+            button(class='btn btn-success btn-sm' type='submit' style='width: 100%') Create
+          div(class='col-md-2 align-bottom')
+
+  if currentCard
+    div(class='progress my-4')
+      div(
+          class='progress-bar' 
+          style=`width: ${Math.floor( ((index + 1)/flashCardDeck.flashCards.length) * 100)}%;` 
+          aria-valuenow=`${index}` 
+          aria-valuemin="0" 
+          aria-valuemax=`${flashCardDeck.flashCards.length}`) #{index + 1}/#{flashCardDeck.flashCards.length}
+
+    div(class='card my-2')
+      div(class='card-body')
+         div(class='card-title')
+           h4 #{currentCard.question}
+         div(class='card-text')
+           p #{currentCard.answer} 
+
+    div(class='btn group')
+        a( 
+            class=`btn btn-secondary ${index - 1 < 0? 'disabled' : ''}` 
+            href=`/deck/${flashCardDeck._id}?index=${index - 1}`) Prev
+
+        button(class='btn btn-secondary') Flip
+
+        a(
+            class = `btn btn-secondary ${index + 1 >= flashCardDeck.flashCards.length ? 'disabled' : ''}` 
+            href=`/deck/${flashCardDeck._id}?index=${index + 1}`) Next
+  else
+     div(class='alert alert-warning') No Cards are in this deck. Add a card.
