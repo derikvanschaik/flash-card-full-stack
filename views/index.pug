@@ -16,11 +16,10 @@ block content
 
   each deck in flashCardDecks
     div(class='row mb-2')
-      div(class='card')
+      div(class='card col-12')
         div(class='card-body')
           div(class='row')
-            div(class='col-8')
+            div(class='d-flex align-items-center justify-content-between')
               h3(class='card-title') #{deck.name}
-            div(class='col-4')
               a(class='btn btn-primary' href=`/deck/${deck._id}?index=0`) see cards
 
