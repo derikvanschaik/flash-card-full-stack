@@ -1,11 +1,9 @@
-form(hx-put="/contact/1" hx-target="this" hx-swap="outerHTML")
-  div(class="form-group")
-    label Question
-    input(type="text" name="firstName" value=`${currentCard.question}`)
+extends layout
+block content
+  form(class='form')
+    div(class="form-group py-2")
+      label(for="deckName" ) Edit Deck Name
+      input(type="text" name="deckName" id="deckName" value=`${deckName}` class='form-control')
 
-  div(class="form-group")
-    labelLast Answer
-    input(type="text" name="lastName" value=`${currentCard.answer}`)
-
-  button(class="btn btn-secondary") Submit
-  button(class="btn btn-secondary" hx-get="/contact/1") Cancel
+    button(class="btn btn-light" hx-put=`/deck/${deckID}` hx-include='#deckName') Submit
+    a(class="btn btn-light" href="/") Cancel

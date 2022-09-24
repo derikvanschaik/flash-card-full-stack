@@ -16,7 +16,6 @@ router.get('/', function(req, res, next) {
     });
 });
 
-
 router.post('/createDeck', function(req, res, next) {
   const name = req.body.deckName;
   const createDate = Date.now();
@@ -121,6 +120,38 @@ router.post('/edit/flashcard/:_id/:index', function(req, res) {
           res.send('Sorry! Something went wrong.');
       });
 });
+
+router.get('/edit/deck/:_id', function(req, res){
+  FlashCardDeck.findById(req.params._id)
+  .then((deck) =>{
+    const deckName = deck.name;
+    const deckID = deck._id;
+    res.render('edit', {deckName, deckID})
+  })
+  .catch((err) =>{
+    res.status(500).send()
+  })
+})
+
+router.put('/deck/:_id', function(req, res){
+  FlashCardDeck.findByIdAndUpdate(req.params._id, {name: req.body.deckName})
+  .then(()=>{
+    res.set("HX-Redirect", '/').send();
+  })
+  .catch((err)=>{
+    res.status(500).send()
+  })
+})
+
+router.delete('/deck/:_id', function(req, res){
+  FlashCardDeck.findByIdAndDelete(req.params._id)
+  .then(() =>{
+    res.set("HX-Redirect", '/').send();
+  })
+  .catch((err) =>{
+    res.status(500).send()
+  })
+})
 
 router.delete('/flashcard/:_id/:index', function(req, res) {
   const id = req.params._id;
